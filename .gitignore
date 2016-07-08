@@ -1,3 +1,9 @@
+# Build directories
+build/
+
+# Temp dev info
+*.sublime-workspace
+
 # Object files
 *.o
 *.ko
