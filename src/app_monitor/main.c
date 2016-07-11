@@ -287,10 +287,11 @@ void onRadioRecv(void)
     case PH_MSG_Control:
         MSG_CHECK_FOR_PAYLOAD(radioBuffer, phaser_control_t, break);
         if(curExp) sendTestResults();
-        act = ctrl_data_p->action;
-        if(act == MSG_ACT_START )   flRestart = false;  // Clear restart command attempt
 
-        // if(act == MSG_ACT_START || act == MSG_ACT_DONE) printAction(act);
+        act = ctrl_data_p->action;
+        if(act == MSG_ACT_START ){
+            flRestart = false;  // Clear restart command attempt
+        }
         printAction(act);
         break;
 

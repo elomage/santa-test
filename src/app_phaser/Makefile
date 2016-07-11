@@ -1,7 +1,5 @@
 #-*-Makefile-*- vim:syntax=make
 #
-# Copyright (c) 2008-2012 the MansOS team. All rights reserved.
-#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #  * Redistributions of source code must retain the above copyright notice,
@@ -22,7 +20,7 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # --------------------------------------------------------------------
-#	Makefile for the sample application
+#	Makefile for MansOS application
 #
 #  The developer must define at least SOURCES and APPMOD in this file
 #
@@ -31,12 +29,12 @@
 # --------------------------------------------------------------------
 
 # Default USB port
-BSLPORT?=/dev/ttyUSB2
+BSLPORT?=/dev/ttyUSB1
 
-# SOURCES = main.c driver_phaser.c
+SOURCES = main.c driver_phaser.c
 # SOURCES = main.c driver_phaserTx.c
 # SOURCES = main.c driver_telosb.c
-SOURCES = main.c driver_santa.c
+# SOURCES = main.c driver_santa.c
 
 APPMOD = PHASER
 

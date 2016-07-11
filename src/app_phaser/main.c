@@ -1,26 +1,3 @@
-/**
- * Copyright (c) 2008-2014 the MansOS team. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *  * Redistributions of source code must retain the above copyright notice,
- *    this list of  conditions and the following disclaimer.
- *  * Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 // --------------------------------------------
 // Phaser node: digitally controlled beam forming 
 // --------------------------------------------
@@ -47,6 +24,8 @@ test_config_t test_config;
 // Test iterator
 test_loop_t testIdx = TEST_LOOP_INIT_VAL;
 
+// Global configuration counter. Each config is defined in the testSet[] array.
+static int config_counter=0;
 
 
 //--- Global data -----------------------------------------------------------
@@ -96,6 +75,7 @@ void mdelay_var(int ms)
 // -------------------------------------------------------------------------
 void config_init()
 {
+    config_counter=0;   // Restart from the first stored configuration
     memcpy(&test_config, &(testSet[0]), sizeof(test_config_t));
 }
 
@@ -291,7 +271,7 @@ void test_init()
 {
     // Init the test infrastructure
     lastAngle = ANGLE_NOT_SET_VALUE;    // Force stepper angle recalibration
-    set_angle( -10 );
+    set_angle( -20 );
     set_angle( 0 );
 
     // Init the iterators
@@ -313,7 +293,6 @@ void test_init()
 // -------------------------------------------------------------------------
 bool next_config()
 {
-    static int config_counter=0;
     test_config_t *cfg;
 
     if( ++config_counter >= testSet_size ){
@@ -365,7 +344,7 @@ bool test_next()
         return true;
     }
 
-    // Next configuration
+    // Next test setup configuration
     send_ctrl_msg(MSG_ACT_DONE);    // Previous configuration done
     if( next_config() ) return true;
 
@@ -435,7 +414,6 @@ void appMain(void)
 #endif
 
     ant_driver_init();
-    config_init();
 
     radioSetReceiveHandle(onRadioRecv);
     radioOn();
@@ -444,6 +422,8 @@ void appMain(void)
 
     while(1) 
     {
+        config_init();  // Init the global configuration list
+    
         test_init();
         test_start();
         
