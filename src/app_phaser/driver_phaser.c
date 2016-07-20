@@ -27,7 +27,7 @@ test_config_t testSet[] = {
         .platform_id = PLATFORM_ID,     // Short test
         .start_delay = 200,
         .send_delay  = 1,
-        .send_count  = 10,
+        .send_count  = 100,
         .angle_step  = 25,
         .angle_count = 8,
         .ant.phaseA.start = 0,
@@ -49,8 +49,8 @@ test_config_t testSet[] = {
         .ant.phaseA.step  = 0,
         .ant.phaseA.count = 0,
         .ant.phaseB.start = 0,
-        .ant.phaseB.step  = 8,
-        .ant.phaseB.count = 32,
+        .ant.phaseB.step  = 1,
+        .ant.phaseB.count = 256,
         .power = {31, 0}
     },
     {

@@ -51,12 +51,27 @@ test_config_t testSet[] = {
         .angle_step  = 5,
         .angle_count = 40,
         .ant.phase.start = 0,
+        .ant.phase.step  = 1,
+        .ant.phase.count = 256,
+        .ant.attenuation.start = 0,
+        .ant.attenuation.step  = 8,
+        .ant.attenuation.count = 2,
+        .power = {31, 0}
+    },
+    {
+        .platform_id = PLATFORM_ID,     // Longer test
+        .start_delay = 1000,
+        .send_delay  = 5,
+        .send_count  = 100,
+        .angle_step  = 5,
+        .angle_count = 40,
+        .ant.phase.start = 0,
         .ant.phase.step  = 8,
         .ant.phase.count = 8,
         .ant.attenuation.start = 0,
         .ant.attenuation.step  = 4,
         .ant.attenuation.count = 4,
-        .power = {31, 23, 15, 7, 3, 0}
+        .power = {31, 15, 7, 3, 0}
     }
 };
 const size_t testSet_size = sizeof(testSet)/sizeof(testSet[0]);
@@ -65,10 +80,10 @@ const size_t testSet_size = sizeof(testSet)/sizeof(testSet[0]);
 // Hardware definitions
 // -------------------------------------------------------------------------
 
+PIN_DEFINE(RFLE_,  2, 7);
 PIN_DEFINE(RFCLK_, 2, 3);
 PIN_DEFINE(RFSDI_, 2, 6);
 PIN_DEFINE(RFSDO_, 2, 0);
-PIN_DEFINE(RFLE_,  2, 7);
 
 // Serial map: 
 // 14bit word: S0 S1 P0-P4 M0-M3 S2 S3 C0
@@ -99,7 +114,11 @@ PIN_DEFINE(PhaserBtn, 1, 2);
 // -------------------------------------------------------------------------
 //  Setup PE46120 chip, one channel
 // -------------------------------------------------------------------------
-void pe46120_setup_channel(uint8_t phase, uint8_t attenuation, uint8_t channel)
+// #pragma GCC push_options
+// #pragma GCC optimize ("O0")
+void 
+__attribute__((optimize("O0"))) 
+pe46120_setup_channel(uint8_t phase, uint8_t attenuation, uint8_t channel)
 {
     // Setup the 14-bit serial word
     uint16_t word = 0;
@@ -111,31 +130,41 @@ void pe46120_setup_channel(uint8_t phase, uint8_t attenuation, uint8_t channel)
     x = (channel & 0x01);
     word |= (x << 13);
 
-    // Send the serial word
-    RFCLK_Low();
-    RFLE_Low();
-    STEP_DELAY();
-    for(x=0; x<14; x++){
-        RFSDI_Write(word & 0x01);
-        STEP_DELAY();
-        RFCLK_High();
-        STEP_DELAY();
+    // TODO: make Atomic
+    {    // Send the serial word
         RFCLK_Low();
-        word = word >> 1;
+        RFLE_Low();
+        STEP_DELAY();
+        for(x=0; x<14; x++){
+            if(word & 0x01){
+                RFCLK_Low();
+                RFSDI_High();
+            }
+            else {
+                RFCLK_Low();
+                RFSDI_Low();
+            }
+            word = word >> 1;
+            STEP_DELAY();
+            RFCLK_High();
+            STEP_DELAY();
+        }
+        RFCLK_Low();
+        RFSDI_Low();
+        STEP_DELAY();
+        STEP_DELAY();
+        RFLE_High();
+        STEP_DELAY();
     }
-    STEP_DELAY();
-    STEP_DELAY();
-    RFLE_High();
-    STEP_DELAY();
 }
-
+// #pragma GCC pop_options
 // -------------------------------------------------------------------------
 //  Setup PE46120 chip, both channels
 // -------------------------------------------------------------------------
 void pe46120_setup(uint8_t phase1, uint8_t phase2, uint8_t attenuation2)
 {
-    pe46120_setup(phase1, 0, 0);
-    pe46120_setup(phase2, attenuation2, 1);
+    pe46120_setup_channel(phase1, 0, 0);
+    pe46120_setup_channel(phase2, attenuation2, 1);
 }
 
 
@@ -154,6 +183,7 @@ void ant_driver_init()
 
     //Send initial config
     pe46120_setup(0, 0, 0);
+
 }
 
 
@@ -220,20 +250,33 @@ bool ant_test_next_config(test_loop_t *testIdx, test_config_t *test_config, phas
 // -------------------------------------------------------------------------
 void ant_test_setup(phaser_ping_t *ant_cfg_p)
 {
-    // Build the config for the chip. Send over the serial port
+    // Build the config for the chip. Send over the serial port to the chip
     uint8_t p1, p2;
 
-    // Version 1 of phase encoding by the configuration.
+    //------ phase encoding by the configuration: -----
+
+    // Version 3
+    // Half byte for each phase
+
+    p1 = ((ant_cfg_p->ant.phase >> 4) & 0x0f);  
+    p2 = (ant_cfg_p->ant.phase & 0x0f);
+    p1 = p1 << 1;
+    p2 = p2 << 1;
+
+    
+    // Version 2
     // Use p1 for -90 or ~0=(-2.8) deg only. 
     // Thus the configuration phase may be used as a continious 6-bit number 
     // for phase range between ~0 - ~180 deg (2.8 - 177.2 deg to be exact).
-    p1 = ((ant_cfg_p->ant.phase >> 5) & 0x01);  
-    p1 = ( p1==0 ) ? 0x10 : 0x00;
 
-    p2 = (ant_cfg_p->ant.phase & 0x1f);
+    // p1 = ((ant_cfg_p->ant.phase >> 5) & 0x01);  
+    // p1 = ( p1==0 ) ? 0x10 : 0x00;
+    // p2 = (ant_cfg_p->ant.phase & 0x1f);
 
-    // Version 2 of phase encoding by the configuration.
+
+    // Version 1 of phase encoding by the configuration.
     // Note, we loose LSB for each phase. Less resolution but wider range.
+
     // p1 = ((ant_cfg_p->ant.phase >> 4) & 0x0f) << 1;
     // p2 = (ant_cfg_p->ant.phase & 0x0f) << 1;
 

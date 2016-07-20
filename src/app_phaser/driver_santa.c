@@ -85,8 +85,22 @@ test_config_t testSet[] = {
         .ant.santa_pins.step = 1,
         .ant.santa_pins.count = 4,      // Up to 2^6
         .ant.santa_extra  = 0,
-        .power = {31, 23, 15, 7, 3, 0}
-    }
+        .power = {31, 15, 7, 3, 0}
+        // .power = {31, 23, 15, 7, 3, 0}
+    },
+    {
+        .platform_id = PLATFORM_ID,     // Longer test
+        .start_delay = 1000,
+        .send_delay  = 5,
+        .send_count  = 100,
+        .angle_step  = 5,
+        .angle_count = 40,
+        .ant.santa_pins.start = 0,
+        .ant.santa_pins.step = 1,
+        .ant.santa_pins.count = 29,      // Up to 2^6
+        .ant.santa_extra  = 0,
+        .power = {31, 0}
+    },
 };
 const size_t testSet_size = sizeof(testSet)/sizeof(testSet[0]);
 

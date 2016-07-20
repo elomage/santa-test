@@ -31,10 +31,10 @@
 # Default USB port
 BSLPORT?=/dev/ttyUSB1
 
-SOURCES = main.c driver_phaser.c
+# SOURCES = main.c driver_phaser.c
 # SOURCES = main.c driver_phaserTx.c
-# SOURCES = main.c driver_telosb.c
 # SOURCES = main.c driver_santa.c
+SOURCES = main.c driver_telosb.c
 
 APPMOD = PHASER
 
