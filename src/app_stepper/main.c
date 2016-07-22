@@ -6,8 +6,13 @@
 #include "stepper.h"
 #include "../phaser_msg.h"
 
+// Uncomment FAKE_STEPPER below for a fake app that returns fast but does no real stepping.
+// This is useful for when no real stepper is available, while you want to
+// minimize the latency for stepper app responding "success" over the radio.
+//
+// #define FAKE_STEPPER 1
 
-//#define DELAY_RATE 500      // mdelay between global loop iterations
+
 #define DELAY_RATE 10      // mdelay between global loop iterations
 
 
@@ -48,7 +53,14 @@ ComStat_t stat = {0,0,0,0};
 // -------------------------------------------------------------------------
 bool setAngle(int angle)
 {
-    bool ret = stepAbsolute(angle);
+    bool ret;
+
+#ifdef FAKE_STEPPER
+    ret = true;
+    mdelay(10);
+#else
+    ret = stepAbsolute(angle);
+#endif
 
     // Send ACK
     ack_msg.payload.angle = angle;
