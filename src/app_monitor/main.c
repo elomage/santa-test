@@ -2,6 +2,8 @@
 // Monitor incoming radio packets.
 // Blinks on message or RX error.
 // Sends message data to the serial port.
+
+
 // --------------------------------------------
 
 #include "stdmansos.h"
@@ -62,6 +64,35 @@ int lastExpIdx=0;
 int rxIdx=0;
 
 static bool flRestart=true;
+
+
+// Prototypes
+void send_ctrl_msg(msg_action_t act);
+
+
+// --------------------------------------------
+// Serial receive handler
+// --------------------------------------------
+#define SER_BUF_SIZE 64
+static uint8_t serBuffer[SER_BUF_SIZE];
+
+void onSerRecv(uint8_t bytes)
+{
+    // int i;
+    // PRINTF("Pong: ");
+    // for(i=0; i<bytes; i++)
+    // {
+    //     PRINTF("%c", (char)serBuffer[i]);
+    // }
+    // PRINTF("\n");
+
+    if(bytes>=1 && serBuffer[0] == 'r'){
+        PRINTF("Ser: Restart!\n");
+        flRestart = true;
+        send_ctrl_msg(MSG_ACT_RESTART);
+    }
+
+}
 
 
 // --------------------------------------------
@@ -316,7 +347,9 @@ void onRadioRecv(void)
 // --------------------------------------------
 void appMain(void)
 {
-    // DB_TOP(db);
+    serialEnableRX(PRINTF_SERIAL_ID);
+    // serialSetReceiveHandle(PRINTF_SERIAL_ID, onSerRecv);
+    serialSetPacketReceiveHandle(PRINTF_SERIAL_ID, onSerRecv, serBuffer, SER_BUF_SIZE);
 
     radioSetReceiveHandle(onRadioRecv);
     radioOn();
