@@ -42,7 +42,7 @@ APPMOD = PHASER
 
 PROJDIR = $(CURDIR)
 ifndef MOSROOT
-  MOSROOT = $(HOME)/svn/MansOS
+  MOSROOT = /opt/MansOS
 endif
 
 include ${MOSROOT}/mos/make/Makefile
