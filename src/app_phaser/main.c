@@ -415,6 +415,8 @@ void appMain(void)
 #ifdef DEBUG_PHASER
     PRINTF("Phaser started\n");
 #endif
+    // Blink on beginning, same sequence as on finish.
+    ledTestFinished();
 
     ant_driver_init();
 
