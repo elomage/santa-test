@@ -14,6 +14,9 @@
 // Comment to disable debug messages over serial port
 #define DEBUG_PHASER 1
 
+// Comment to disable debug messages over serial port
+#define FL_TEST_RESTART_ON_END 1
+
 #define RADIO_MAX_TX_POWER 31
 #define RADIO_BUF_PAYLOAD_LEN RADIO_MAX_PACKET
 
@@ -443,6 +446,10 @@ void appMain(void)
             if( ant_check_button() ) fl_test_restart = true;
         }
         // Test done!
+
+#ifdef FL_TEST_RESTART_ON_END
+        fl_test_restart = true;
+#endif
 
         while( !fl_test_restart || fl_test_stop ) 
         {
