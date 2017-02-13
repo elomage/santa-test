@@ -24,12 +24,12 @@ char *ant_driver_name = "Phaser";
 // -------------------------------------------------------------------------
 test_config_t testSet[] = {
     {
-        .platform_id = PLATFORM_ID,     // Short test
+        .platform_id = PLATFORM_ID,     // SuperShort test
         .start_delay = 100,
         .send_delay  = 1,
         .send_count  = 100,
-        .angle_step  = 5,
-        .angle_count = 40,
+        .angle_step  = 25,
+        .angle_count = 8,
         .ant.phaseA.start = 0,
         .ant.phaseA.step  = 0,
         .ant.phaseA.count = 0,
@@ -38,21 +38,39 @@ test_config_t testSet[] = {
         .ant.phaseB.count = 8,
         .power = {15, 0}
     },
-    {
-        .platform_id = PLATFORM_ID,     // Longer test
-        .start_delay = 100,
-        .send_delay  = 5,
-        .send_count  = 100,
-        .angle_step  = 5,
-        .angle_count = 40,
-        .ant.phaseA.start = 0,
-        .ant.phaseA.step  = 0,
-        .ant.phaseA.count = 0,
-        .ant.phaseB.start = 0,
-        .ant.phaseB.step  = 1,
-        .ant.phaseB.count = 256,
-        .power = {31, 0}
-    },
+    
+    // {
+    //     .platform_id = PLATFORM_ID,     // Short test
+    //     .start_delay = 100,
+    //     .send_delay  = 1,
+    //     .send_count  = 100,
+    //     .angle_step  = 5,
+    //     .angle_count = 40,
+    //     .ant.phaseA.start = 0,
+    //     .ant.phaseA.step  = 0,
+    //     .ant.phaseA.count = 0,
+    //     .ant.phaseB.start = 0,
+    //     .ant.phaseB.step  = 32,
+    //     .ant.phaseB.count = 8,
+    //     .power = {15, 0}
+    // },
+    
+    // {
+    //     .platform_id = PLATFORM_ID,     // Longer test
+    //     .start_delay = 100,
+    //     .send_delay  = 5,
+    //     .send_count  = 100,
+    //     .angle_step  = 5,
+    //     .angle_count = 40,
+    //     .ant.phaseA.start = 0,
+    //     .ant.phaseA.step  = 0,
+    //     .ant.phaseA.count = 0,
+    //     .ant.phaseB.start = 0,
+    //     .ant.phaseB.step  = 1,
+    //     .ant.phaseB.count = 256,
+    //     .power = {31, 0}
+    // },
+
     // {
     //     .platform_id = PLATFORM_ID,     // Longer test
     //     .start_delay = 200,
